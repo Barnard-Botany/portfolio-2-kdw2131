@@ -1,0 +1,90 @@
+```{r}
+#library("bien")
+#As you know, you can obtain species occurrence data from the BIEN database, or from another even more comprehensive data base called gbif (gbif.org). Occurrence data is a type of abundance data, and it can also be used to figure out presence-absence data. 
+cumberland <- BIEN_occurrence_county(country="United States", state="Maine", county = "Cumberland")
+head(cumberland)
+tail(cumberland)
+york <- BIEN_occurrence_county(country="United States", state="Maine", county = "York")
+head(york)
+tail(york)
+attributes(york)
+knox <- BIEN_occurrence_county(country="United States", state="Maine", county = "Knox")
+head(knox)
+tail(knox)
+attributes(knox)
+```
+
+```{r}
+#library(BIEN)
+#We previously learned to "slim down" data sets to one or a few variables, which we can do here
+cumberland.occ=cumberland[c(1)]
+head(cumberland.occ)
+york.occ=york[c(1)]
+head(york.occ)
+knox.occ=knox[c(1)]
+head(knox.occ)
+#These are now two species occurrence lists, one for The Bronx, one for Manhattan
+#To turn them into species lists with abundance data, you can recycle the code from above.
+cumberland.ab=count(cumberland.occ)
+head(cumberland.ab)
+york.ab=count(york.occ)
+head(york.ab)
+knox.ab=count(knox.occ)
+head(knox.ab)
+#Then re-name the columns as previously. Here just the Bronx
+cumberland.ab=data.frame("cumberland", cumberland.ab)
+head(cumberland.ab)
+names(cumberland.ab)<-c("ListID", "SpeciesID", "Freq")
+head(cumberland.ab)
+york.ab=data.frame("york", york.ab)
+head(york.ab)
+names(york.ab)<-c("ListID", "SpeciesID", "Freq")
+head(york.ab)
+knox.ab=data.frame("knox", knox.ab)
+head(knox.ab)
+names(knox.ab)<-c("ListID", "SpeciesID", "Freq")
+head(knox.ab)
+threecounty.ab=rbind(cumberland.ab, york.ab, knox.ab)
+head(threecounty.ab)
+tail(threecounty.ab)
+dim(threecounty.ab)
+#This powerful function matrify is going to convert this list of species with their site-specific abundances into a matrix with the species as the column headings, the rows as the samples. This gives a long sample list
+urban.ab<-matrify(threecounty.ab)
+urban.ab
+#If we look at the dimensions of this matrix, what does it mean? What is 2? What is 9?
+dim(urban.ab)
+simpson<-diversity(urban.ab, index = "simpson")
+shannon<-diversity(urban.ab, index = "shannon")
+simpson
+shannon
+bray = vegdist(urban.ab, "bray")
+bray
+jaccard = vegdist(urban.ab, "jaccard", binary=T)
+jaccard
+
+
+```
+
+```{r}
+write.csv(threecounty.ab, file = "threecounty.csv")
+```
+
+What if you wanted to save the abundance matrix as well?
+
+
+```{r}
+write.csv(urban.ab, file = "urban.csv")
+```
+
+```{r}
+#Then I am ready to do some computing of an index or of several indices:
+simpson<-diversity(wab, index = "simpson")
+shannon<-diversity(wab, index = "shannon")
+simpson
+shannon
+jaccard = vegdist(wab, "jaccard")
+jaccard
+bray = vegdist(wab, "bray")
+bray
+```
+# This data indicates that based on the Simpson index, there is relatively high diversity within the lists. According to the Shannon index, there is a high richness and eveness of both of the communities. As reflected by the Bray and Jaccard indeces, there is no similarity between the lists. 

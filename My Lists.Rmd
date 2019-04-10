@@ -1,0 +1,61 @@
+
+```{r}
+#How about if you have another file? 
+MH=read.csv("ArticlePlants.csv")
+head(MH)
+tail(MH)
+```
+
+```{r}
+#Since the genus name and species names were in separate columns, I'm going to paste them back together
+speciesID=paste(MH$Scientific, MH$Name, sep=" ")
+speciesID
+```
+
+```{r}
+#Just as we did before, let's count how often each species is in the occurrence list.
+MH_list=count(speciesID)
+head(MH_list)
+MH_list=data.frame(MH_list)
+MH_list=data.frame("MH", MH_list)
+head(MH_list)
+```
+```{r}
+#Now I'm going to give them headings, just as we did earlier
+names(MH_list)<-c("ListID", "SpeciesID", "Freq")
+```
+
+```{r}
+#Now I'm going to repeat that for my second sample
+LES=read.csv("AddressPlants.csv")
+head(LES)
+tail(LES)
+speciesID=paste(LES$Scientific, LES$Name, sep=" ")
+speciesID
+LES_list=count(speciesID)
+head(LES_list)
+LES_list=data.frame("LES", LES_list)
+names(LES_list)<-c("ListID", "SpeciesID", "Freq")
+```
+
+```{r}
+#And if I combine my two lists into one
+Welikia2=rbind(LES_list, MH_list)
+dim(Welikia2)
+#And run the matrify function
+wab=matrify(Welikia2)
+wab
+```
+
+```{r}
+#Then I am ready to do some computing of an index or of several indices:
+simpson<-diversity(wab, index = "simpson")
+shannon<-diversity(wab, index = "shannon")
+simpson
+shannon
+jaccard = vegdist(wab, "jaccard")
+jaccard
+bray = vegdist(wab, "bray")
+bray
+```
+# This data indicates that based on the Simpson index, there is relatively high diversity within the lists. According to the Shannon index, there is a high richness and eveness of both of the communities. As reflected by the Bray and Jaccard indeces, there is no similarity between the lists. 
